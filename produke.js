@@ -1245,7 +1245,7 @@ module.exports = function({deepClone, utils, mainStore }, gamedefs) {
 
                             /* hide room fake box in single player screen and other ports screens */
                             div.modal-body:has(select#mode > option[value="singleplayer"]:checked),
-                            div.modal-body:has(select#exec > optgroup > option:not([value="produke"]):checked) {
+                            div.modal-body:not(:has(img[src*="produke"])) {
                                 div#room-settings-label,
                                 div#room-settings-header,
                                 div#room-settings-footer {
@@ -1313,7 +1313,7 @@ module.exports = function({deepClone, utils, mainStore }, gamedefs) {
                                 }
 
                                 /* make param hidden actually hidden */
-                                .param-hidden, .param-hiden * {
+                                .param-hidden, .param-hidden * {
                                     display: none !important;
                                 }
 
@@ -1360,7 +1360,6 @@ module.exports = function({deepClone, utils, mainStore }, gamedefs) {
                                     border: none;
                                     padding: 0px !important;
                                     margin: 0px !important;
-                                    height 41px;
                                 }
 
                                 /* flags label */
@@ -1607,7 +1606,7 @@ module.exports = function({deepClone, utils, mainStore }, gamedefs) {
                                     width: 376px;
                                 }
 
-                                #launch-game-modal .parameter-row {
+                                .parameter-row {
                                     border-bottom: none !important;
                                 }
 
