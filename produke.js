@@ -1254,7 +1254,7 @@ module.exports = function({deepClone, utils, mainStore }, gamedefs) {
                             }
 
                             /* prevent style from applying to other ports */
-                            /*div.modal-body:has(select#exec > optgroup > option[value="produke"]:checked) {*/
+                            div.modal-body:has(img[src*="produke"]) {
                             
                                 /* ================================================================================= */
                                 /* GRID HACK                                                                         */
@@ -1611,7 +1611,7 @@ module.exports = function({deepClone, utils, mainStore }, gamedefs) {
                                     border-bottom: none !important;
                                 }
 
-                            /*}*/
+                            }
 
                         </style>
 
