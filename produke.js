@@ -5,7 +5,7 @@ export default function produke({deepClone, utils}, xduke) { // module.exports =
     const path = require("path");
 
     // clone xduke definitions as base
-    const produke = deepClone(gamedefs.games.duke3d.executables.xduke); // deepClone(xduke);
+    const produke = deepClone(xduke); // deepClone(gamedefs.games.duke3d.executables.xduke);
 
     // remove arguments that have been moved to netflags
     delete produke.parameters.noMonsters;
