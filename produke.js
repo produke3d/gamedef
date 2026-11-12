@@ -5,7 +5,7 @@ export default function produke({deepClone, utils}, xduke) { // module.exports =
     const path = require("path");
 
     // clone xduke definitions as base
-    const produke = deepClone(xduke); // deepClone(gamedefs.games.duke3d.executables.xduke);
+    const produke = deepClone(xduke); // const produke = deepClone(gamedefs.games.duke3d.executables.xduke);
 
     // remove arguments that have been moved to netflags
     delete produke.parameters.noMonsters;
@@ -58,6 +58,56 @@ export default function produke({deepClone, utils}, xduke) { // module.exports =
         fs.writeFileSync(path.resolve(ctx.GameDir, netlistFileName), netlistText);
 
     }}];
+
+    // color / team change callback
+    produke.onRoomUpdate = (ctx, room) => {
+
+        const colors = [
+            ['Auto', 'auto'], 
+            ['Blue', 'blue'], 
+            ['Red', 'red'], 
+            ['Green', 'green'], 
+            ['Gray', 'gray'],
+            ['Dark Gray', 'dark-gray'], 
+            ['Dark Green', 'dark-green'], 
+            ['Brown', 'brown'],
+            ['Dark Blue', 'dark-blue'], 
+            ['Bright Red', 'bright-red'], 
+            ['Dark Brown', 'dark-brown'],
+            ['Cement', 'cement'], 
+            ['Black', 'black'], 
+            ['Off White', 'off-white'],
+            ['Orange', 'orange'], 
+            ['Yellow', 'yellow'], 
+            ['Purple', 'purple']
+        ];
+
+        const teamModes = [3, 4, 5, 6, 9];
+
+        const teams = ['', 'blue', 'red', 'green', 'brown'];
+
+        const numericArg = (param, prefix) => {
+            const match = param?.args?.join(' ').trim().match(new RegExp('^' + prefix + '\\s*(\\d+)$'));
+            return match ? Number(match[1]) : undefined;
+        };
+
+        if (!room) return;
+
+        const mode = numericArg(room.params.find(p => p.id === 'multiplayerMode'), '/c');
+
+        if (mode == null) return;
+
+        const teamMode = teamModes.includes(mode);
+        
+        const id = teamMode ? 'team' : 'color';
+
+        for (const [nick, player] of Object.entries(room.participantNicks)) {
+            const value = numericArg(player.params?.find(p => p.id === id), '-' + id);
+            const color = teamMode ? teams[value] : colors[value]?.[1];
+            ctx.setNickClass(nick, color && color !== 'auto' ? `produke-nick-color produke-nick-${color}` : null);
+        }
+
+    };
 
     // game mode
     produke.parameters.multiplayerMode.label = "Game Mode";
@@ -200,7 +250,7 @@ export default function produke({deepClone, utils}, xduke) { // module.exports =
         type: "choice",
         label: "Color",
         optional: false,
-        for: "private",
+        for: "participant",
         value: ["-color", c => c.value],
         choices: [
             {label: "Auto", value: "0"},
@@ -233,7 +283,7 @@ export default function produke({deepClone, utils}, xduke) { // module.exports =
         type: "choice",
         label: "Team",
         optional: false,
-        for: "private",
+        for: "participant",
         value: ["-team", c => c.value],
         choices: [
             {label: "Blue", value: "1"},
@@ -558,6 +608,7 @@ export default function produke({deepClone, utils}, xduke) { // module.exports =
 
         // argument
         produke.parameters[netflag] = {
+            skipForDemoPlayback: true,
             modeSupport: ["singleplayer", "multiplayer"],
             type: "static",
             label: netflag.charAt(0).toUpperCase() + netflag.slice(1).replace("flag", "Flag"),
@@ -860,14 +911,26 @@ export default function produke({deepClone, utils}, xduke) { // module.exports =
                                 div#user-settings-label                           { grid-row: 16; }
                                 div#user-settings-header                          { grid-row: 16; }
                                 div.parameter-row:has(#game-param-playDmo)        { grid-row: 17; }
-                                div.parameter-row:has(#game-param-color)          { grid-row: 18; }
-                                div.parameter-row:has(#game-param-team)           { grid-row: 19; }
+
+                                /* these became "participant" parameters */
+                                /*div.parameter-row:has(#game-param-color)        { grid-row: 18; }*/
+                                /*div.parameter-row:has(#game-param-team)         { grid-row: 19; }*/
+
                                 div.parameter-row:has(#game-param-recordDmo)      { grid-row: 20; grid-column: 1 / span 2 !important; padding-left: 190px; border-left: 1px solid #495057; }
                                 div.parameter-row:has(#game-param-spec)           { grid-row: 20; grid-column: 3 / span 2 !important; padding-right: 111px; border-right: 1px solid #495057; }
                                 div.parameter-row:has(#game-param-exploitMode)    { grid-row: 21; grid-column: 1 / span 2 !important; padding-left: 190px; border-left: 1px solid #495057; }
                                 div.parameter-row:has(#game-param-allowMods)      { grid-area: 21 / 3 !important; }
                                 div.parameter-row:has(#game-param-disableAutoaim) { grid-area: 21 / 4 !important; border-right: 1px solid #495057; padding-right: 16px; }
                                 div#user-settings-footer                          { grid-row: 22; }
+
+                                div.participant-parameters {
+                                    grid-row: 18;
+                                    margin: 0px !important;
+                                    border-radius: 0px;
+                                    div.participant-parameters-heading {
+                                        display: none;
+                                    }
+                                }
 
                                 /* ================================================================================= */
                                 /* NETFLAGS                                                                          */
@@ -1213,6 +1276,6 @@ export default function produke({deepClone, utils}, xduke) { // module.exports =
     };
 
     // set gamedef
-    return produke; // gamedefs.games.duke3d.executables.produke = produke; 
+    return produke; // gamedefs.games.duke3d.executables.produke = produke;    
 
 }
