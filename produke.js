@@ -1,5 +1,5 @@
 // custom NukemNet support for proDuke written by LARD (phcs93)
-module.exports = function({deepClone, utils, mainStore }, gamedefs) { // export default function produke({deepClone, utils}, xduke) {
+export default function produke({deepClone, utils}, xduke) { // module.exports = function({deepClone, utils, mainStore }, gamedefs) {
 
     const fs = require("fs");
     const path = require("path");
@@ -1213,6 +1213,6 @@ module.exports = function({deepClone, utils, mainStore }, gamedefs) { // export 
     };
 
     // set gamedef
-    gamedefs.games.duke3d.executables.produke = produke; // return produke;
+    return produke; // gamedefs.games.duke3d.executables.produke = produke; 
 
 }
